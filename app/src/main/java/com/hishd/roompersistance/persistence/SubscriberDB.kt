@@ -10,6 +10,7 @@ import androidx.room.RoomDatabase
 abstract class SubscriberDB: RoomDatabase() {
     abstract val subscriberDAO: SubscriberDAO
 
+    //Creating a Singleton
     companion object {
         @Volatile
         private var INSTANCE: SubscriberDB? = null
