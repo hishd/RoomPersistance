@@ -1,18 +1,80 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".MainActivity">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <data>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <variable
+            name="viewmodel"
+            type="com.hishd.roompersistance.viewmodel.MainActivityViewModel" />
+    </data>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".view.MainActivity">
+
+        <LinearLayout
+            android:id="@+id/layout_top"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp"
+            android:orientation="vertical"
+            android:paddingHorizontal="50dp">
+
+            <EditText
+                android:id="@+id/txtSubscriberName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Subscriber Name"
+                android:text="@={viewmodel.subscriberName}" />
+
+            <EditText
+                android:id="@+id/txtSubscriberEmail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:hint="Subscriber Email"
+                android:text="@={viewmodel.subscriberEmail}" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layout_middle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/layout_top"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal"
+            android:paddingHorizontal="50dp"
+            android:weightSum="2">
+
+            <Button
+                android:id="@+id/btnSaveUpdate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
+                android:layout_weight="1"
+                android:onClick="@{() -> viewmodel.saveOrUpdate()}"
+                android:text="@={viewmodel.btnSaveUpdate}" />
+
+            <Button
+                android:id="@+id/btnClearDelete"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_weight="1"
+                android:onClick="@{() -> viewmodel.clearOrDelete()}"
+                android:text="@={viewmodel.btnClearDelete}" />
+
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerSubscriber"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/layout_middle"
+            android:layout_margin="10dp" />
+
+    </RelativeLayout>
+</layout>

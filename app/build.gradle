@@ -58,8 +58,10 @@ dependencies {
 
     //Room Database Dependencies
     implementation "androidx.room:room-runtime:$room_version"
-    kapt "androidx.room:room-compiler:$room_version"
+    annotationProcessor  "androidx.room:room-compiler:$room_version"
 
     //Coroutines support for Room Database
     implementation "androidx.room:room-ktx:$room_version"
+
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.1")
 }
