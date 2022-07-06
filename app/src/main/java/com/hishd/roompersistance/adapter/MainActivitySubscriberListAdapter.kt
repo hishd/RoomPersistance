@@ -8,7 +8,7 @@ import com.hishd.roompersistance.persistence.Subscriber
 
 class MainActivitySubscriberListAdapter(private val callback: (Subscriber) -> Unit): RecyclerView.Adapter<MainActivitySubscriberListAdapterViewHolder>() {
 
-    private var subscriberList: List<Subscriber> = listOf()
+    private var subscriberList = ArrayList<Subscriber>()
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -30,7 +30,8 @@ class MainActivitySubscriberListAdapter(private val callback: (Subscriber) -> Un
     }
 
     fun setData(subscriberList: List<Subscriber>) {
-        this.subscriberList = subscriberList
+        this.subscriberList.clear()
+        this.subscriberList.addAll(subscriberList)
         notifyDataSetChanged()
     }
 }

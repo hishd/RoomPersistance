@@ -1,5 +1,6 @@
 package com.hishd.roompersistance.viewmodel
 
+import android.util.Patterns
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -61,6 +62,17 @@ class MainActivityViewModel(val subscriberRepo: SubscriberRepository) : ViewMode
     }
 
     fun saveOrUpdate() {
+
+        if(subscriberName.value == null || subscriberEmail.value == null) {
+            statusMessage.value = Event("Subscriber Name & Email should be entered")
+            return
+        }
+
+        if(!Patterns.EMAIL_ADDRESS.matcher(subscriberEmail.value!!).matches()) {
+            statusMessage.value = Event("Invalid Email")
+            return
+        }
+
         if (this.selectedSubscriber != null) {
             selectedSubscriber!!.name = subscriberName.value ?: ""
             selectedSubscriber!!.email = subscriberEmail.value ?: ""
