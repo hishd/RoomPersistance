@@ -1,13 +1,12 @@
 package com.hishd.roompersistance.adapter
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.hishd.roompersistance.databinding.ListSubscriberItemBinding
 import com.hishd.roompersistance.persistence.Subscriber
 
-class MainActivitySubscriberListAdapter: RecyclerView.Adapter<MainActivitySubscriberListAdapterViewHolder>() {
+class MainActivitySubscriberListAdapter(private val callback: (Subscriber) -> Unit): RecyclerView.Adapter<MainActivitySubscriberListAdapterViewHolder>() {
 
     private var subscriberList: List<Subscriber> = listOf()
 
@@ -16,7 +15,7 @@ class MainActivitySubscriberListAdapter: RecyclerView.Adapter<MainActivitySubscr
         viewType: Int
     ): MainActivitySubscriberListAdapterViewHolder {
         val view = ListSubscriberItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return MainActivitySubscriberListAdapterViewHolder(view)
+        return MainActivitySubscriberListAdapterViewHolder(view, callback)
     }
 
     override fun onBindViewHolder(
@@ -36,10 +35,17 @@ class MainActivitySubscriberListAdapter: RecyclerView.Adapter<MainActivitySubscr
     }
 }
 
-class MainActivitySubscriberListAdapterViewHolder(private val binding: ListSubscriberItemBinding): RecyclerView.ViewHolder(binding.root) {
+class MainActivitySubscriberListAdapterViewHolder(
+    private val binding: ListSubscriberItemBinding,
+    val callback: (Subscriber) -> Unit
+): RecyclerView.ViewHolder(binding.root) {
     fun bindView(subscriber: Subscriber) {
         binding.lblSubscriberID.text = "ID : ${subscriber.id}"
         binding.lblSubscriberName.text = "Name : ${subscriber.name}"
         binding.lblSubscriberEmail.text = "Email : ${subscriber.email}"
+
+        binding.root.setOnClickListener {
+            callback(subscriber)
+        }
     }
 }

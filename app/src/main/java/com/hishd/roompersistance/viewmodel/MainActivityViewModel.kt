@@ -1,10 +1,12 @@
 package com.hishd.roompersistance.viewmodel
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hishd.roompersistance.persistence.Subscriber
 import com.hishd.roompersistance.persistence.SubscriberRepository
+import com.hishd.roompersistance.util.Event
 import kotlinx.coroutines.launch
 
 class MainActivityViewModel(val subscriberRepo: SubscriberRepository) : ViewModel() {
@@ -16,41 +18,93 @@ class MainActivityViewModel(val subscriberRepo: SubscriberRepository) : ViewMode
 
     val subscribersList = subscriberRepo.subscribers
 
+    private var selectedSubscriber: Subscriber? = null
+
+    private val statusMessage = MutableLiveData<Event<String>>()
+    val message: LiveData<Event<String>> get() = statusMessage
+
     init {
         btnSaveUpdate.value = "Save"
         btnClearDelete.value = "Clear All"
     }
 
-    fun addSubscriber(subscriber: Subscriber) = viewModelScope.launch {
+    private fun addSubscriber(subscriber: Subscriber) = viewModelScope.launch {
         subscriberRepo.addSubscriber(subscriber)
+        statusMessage.value = Event("Subscriber Added Successfully")
     }
 
-    fun updateSubscriber(subscriber: Subscriber) = viewModelScope.launch {
+    private fun updateSubscriber(subscriber: Subscriber) = viewModelScope.launch {
         subscriberRepo.updateSubscriber(subscriber)
+        statusMessage.value = Event("Subscriber Udpated Successfully")
     }
 
-    fun deleteSubscriber(subscriber: Subscriber) = viewModelScope.launch {
+    private fun deleteSubscriber(subscriber: Subscriber) = viewModelScope.launch {
         subscriberRepo.deleteSubscriber(subscriber)
+        statusMessage.value = Event("Subscriber Deleted Successfully")
     }
 
-    fun clearAllSubscribers() = viewModelScope.launch {
+    private fun clearAllSubscribers() = viewModelScope.launch {
         subscriberRepo.deleteAllSubscriberData()
+        statusMessage.value = Event("Subscribers Cleared Successfully")
     }
 
     fun saveOrUpdate() {
-        addSubscriber(
-            Subscriber(
-                id = 0,
-                name = subscriberName.value ?: "",
-                email = subscriberEmail.value ?: ""
+        if(this.selectedSubscriber!= null) {
+            selectedSubscriber!!.name = subscriberName.value?: ""
+            selectedSubscriber!!.email = subscriberEmail.value?: ""
+            updateSubscriber(selectedSubscriber!!)
+            selectedSubscriber = null
+        } else {
+            addSubscriber(
+                Subscriber(
+                    id = 0,
+                    name = subscriberName.value ?: "",
+                    email = subscriberEmail.value ?: ""
+                )
             )
-        )
-
-        subscriberName.value = ""
-        subscriberEmail.value = ""
+        }
+        resetValues()
+        setButtonText(MainActivityOperation.SaveClear)
     }
 
     fun clearOrDelete() {
-        clearAllSubscribers()
+        if(this.selectedSubscriber!= null) {
+            deleteSubscriber(selectedSubscriber!!)
+            selectedSubscriber = null
+        } else {
+            clearAllSubscribers()
+        }
+        resetValues()
+        setButtonText(MainActivityOperation.SaveClear)
     }
+
+    fun initUpdateDelete(subscriber: Subscriber) {
+        subscriberName.value = subscriber.name
+        subscriberEmail.value = subscriber.email
+        setButtonText(MainActivityOperation.UpdateDelete)
+        this.selectedSubscriber = subscriber
+    }
+
+    private fun setButtonText(operation: MainActivityOperation) {
+        when(operation) {
+            MainActivityOperation.SaveClear -> {
+                btnSaveUpdate.value = "Save"
+                btnClearDelete.value = "Clear All"
+            }
+            MainActivityOperation.UpdateDelete -> {
+                btnSaveUpdate.value = "Update"
+                btnClearDelete.value = "Delete"
+            }
+        }
+    }
+
+    private fun resetValues() {
+        subscriberName.value = ""
+        subscriberEmail.value = ""
+    }
+}
+
+enum class MainActivityOperation {
+    SaveClear,
+    UpdateDelete
 }
