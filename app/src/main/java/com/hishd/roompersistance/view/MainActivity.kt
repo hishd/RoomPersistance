@@ -1,17 +1,18 @@
 package com.hishd.roompersistance.view
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import com.hishd.roompersistance.R
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.hishd.roompersistance.adapter.MainActivitySubscriberListAdapter
 import com.hishd.roompersistance.databinding.ActivityMainBinding
 import com.hishd.roompersistance.persistence.SubscriberDB
 import com.hishd.roompersistance.persistence.SubscriberRepository
+import com.hishd.roompersistance.util.ItemOffsetDecoration
 import com.hishd.roompersistance.viewmodel.MainActivityViewModel
 import com.hishd.roompersistance.viewmodel.MainActivityViewModelFactory
-import kotlinx.coroutines.flow.collect
+import com.intuit.sdp.R.dimen
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
@@ -20,6 +21,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var viewModel: MainActivityViewModel
     private lateinit var viewModelFactory: MainActivityViewModelFactory
     private lateinit var subscriberRepository: SubscriberRepository
+    private lateinit var recyclerAdapter: MainActivitySubscriberListAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,23 +29,36 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         initResources()
-        getSubscribersList()
+        setupRecyclerView()
     }
 
     private fun initResources() {
         val dao = SubscriberDB.getInstance(application).subscriberDAO
         subscriberRepository = SubscriberRepository(dao)
         viewModelFactory = MainActivityViewModelFactory(subscriberRepo = subscriberRepository)
-        viewModel = ViewModelProvider(this, factory = viewModelFactory)[MainActivityViewModel::class.java]
+        viewModel =
+            ViewModelProvider(this, factory = viewModelFactory)[MainActivityViewModel::class.java]
 
         binding.viewmodel = viewModel
         binding.lifecycleOwner = this
     }
 
+    private fun setupRecyclerView() {
+        recyclerAdapter = MainActivitySubscriberListAdapter()
+        val decoration =
+            ItemOffsetDecoration(this, dimen._2sdp, dimen._2sdp, dimen._5sdp, dimen._5sdp)
+        with(binding) {
+            recyclerSubscriber.layoutManager = LinearLayoutManager(this@MainActivity)
+            recyclerSubscriber.addItemDecoration(decoration)
+            recyclerSubscriber.adapter = recyclerAdapter
+        }
+        getSubscribersList()
+    }
+
     private fun getSubscribersList() {
         lifecycleScope.launch {
             viewModel.subscribersList.collect {
-                Log.d("List", it.toString())
+                recyclerAdapter.setData(it)
             }
         }
     }
