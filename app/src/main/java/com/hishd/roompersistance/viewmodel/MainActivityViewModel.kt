@@ -29,29 +29,41 @@ class MainActivityViewModel(val subscriberRepo: SubscriberRepository) : ViewMode
     }
 
     private fun addSubscriber(subscriber: Subscriber) = viewModelScope.launch {
-        subscriberRepo.addSubscriber(subscriber)
-        statusMessage.value = Event("Subscriber Added Successfully")
+        val rowID = subscriberRepo.addSubscriber(subscriber)
+        if (rowID > -1)
+            statusMessage.value = Event("Subscriber Added Successfully")
+        else
+            statusMessage.value = Event("Error Occurred")
     }
 
     private fun updateSubscriber(subscriber: Subscriber) = viewModelScope.launch {
-        subscriberRepo.updateSubscriber(subscriber)
-        statusMessage.value = Event("Subscriber Udpated Successfully")
+        val rows = subscriberRepo.updateSubscriber(subscriber)
+        if (rows > 0)
+            statusMessage.value = Event("Subscriber Udpated Successfully")
+        else
+            statusMessage.value = Event("Error Occurred")
     }
 
     private fun deleteSubscriber(subscriber: Subscriber) = viewModelScope.launch {
-        subscriberRepo.deleteSubscriber(subscriber)
-        statusMessage.value = Event("Subscriber Deleted Successfully")
+        val rows = subscriberRepo.deleteSubscriber(subscriber)
+        if (rows > 0)
+            statusMessage.value = Event("Subscriber Deleted Successfully")
+        else
+            statusMessage.value = Event("Error Occurred")
     }
 
     private fun clearAllSubscribers() = viewModelScope.launch {
-        subscriberRepo.deleteAllSubscriberData()
-        statusMessage.value = Event("Subscribers Cleared Successfully")
+        val rows = subscriberRepo.deleteAllSubscriberData()
+        if (rows > 0)
+            statusMessage.value = Event("Subscribers Cleared Successfully")
+        else
+            statusMessage.value = Event("Error Occurred")
     }
 
     fun saveOrUpdate() {
-        if(this.selectedSubscriber!= null) {
-            selectedSubscriber!!.name = subscriberName.value?: ""
-            selectedSubscriber!!.email = subscriberEmail.value?: ""
+        if (this.selectedSubscriber != null) {
+            selectedSubscriber!!.name = subscriberName.value ?: ""
+            selectedSubscriber!!.email = subscriberEmail.value ?: ""
             updateSubscriber(selectedSubscriber!!)
             selectedSubscriber = null
         } else {
@@ -68,7 +80,7 @@ class MainActivityViewModel(val subscriberRepo: SubscriberRepository) : ViewMode
     }
 
     fun clearOrDelete() {
-        if(this.selectedSubscriber!= null) {
+        if (this.selectedSubscriber != null) {
             deleteSubscriber(selectedSubscriber!!)
             selectedSubscriber = null
         } else {
@@ -86,7 +98,7 @@ class MainActivityViewModel(val subscriberRepo: SubscriberRepository) : ViewMode
     }
 
     private fun setButtonText(operation: MainActivityOperation) {
-        when(operation) {
+        when (operation) {
             MainActivityOperation.SaveClear -> {
                 btnSaveUpdate.value = "Save"
                 btnClearDelete.value = "Clear All"

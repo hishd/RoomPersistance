@@ -10,13 +10,13 @@ interface SubscriberDAO {
     suspend fun addSubscriber(subscriber: Subscriber): Long
 
     @Update
-    suspend fun updateSubscriber(subscriber: Subscriber)
+    suspend fun updateSubscriber(subscriber: Subscriber) : Int
 
     @Delete
-    suspend fun deleteSubscriber(subscriber: Subscriber)
+    suspend fun deleteSubscriber(subscriber: Subscriber) : Int
 
     @Query("DELETE FROM tbl_subscriber")
-    suspend fun deleteAll()
+    suspend fun deleteAll() : Int
 
     @Query("SELECT * FROM tbl_subscriber")
     fun getAllSubscribers(): Flow<List<Subscriber>>
